@@ -1,58 +1,32 @@
-'use client';
-import React, { useEffect, useState } from 'react';
+import { notFound } from "next/navigation";
 
-export default function Home() {
-  const [weather, setWeather] = useState(null);
-  const [location, setLocation] = useState("Your Location");
-  const [currentTime, setCurrentTime] = useState(new Date());
+import { CurrentWeather } from "@/components/current-weather";
+import { Dashboard } from "@/components/dashboard";
+import { WeeklyForecast } from "@/components/weekly-forecast";
+import { getForecast } from "@/lib/api";
+import { DEFAULT_LOCATION } from "@/lib/constants";
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-      const data = await res.json();
-      setWeather(data);
-    });
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Record<string, string>;
+}) {
+  const data = await getForecast({
+    lat: searchParams.lat || DEFAULT_LOCATION.lat,
+    lon: searchParams.lon || DEFAULT_LOCATION.lon,
+  });
 
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+  if (!data) return notFound();
 
-    return () => clearInterval(timer);
-  }, []);
-
-  if (!weather) return <div className="loading">Loading...</div>;
+  const [today] = data.list;
 
   return (
-    <main className="app">
-      <div className="card dark">
-        <div className="top-bar">
-          <input type="text" placeholder="Search location..." />
-          <button>Search</button>
-          <div>{currentTime.toLocaleTimeString()}</div>
-        </div>
-        <h1>{location}</h1>
-        <h2>{Math.round(weather.temperature)}°C</h2>
-        <p>{weather.description}</p>
-        <div className="tiles">
-          <div className="tile">
-            <strong>Feels Like</strong>
-            <p>{Math.round(weather.feels_like)}°C</p>
-            <span>{weather.feels_like > weather.temperature ? "Feels warmer" : "Feels cooler"} than actual temperature.</span>
-          </div>
-          <div className="tile">
-            <strong>Humidity</strong>
-            <p>{weather.humidity}%</p>
-            <span>Moderate humidity.</span>
-          </div>
-          <div className="tile">
-            <strong>Visibility</strong>
-            <p>{weather.visibility} km</p>
-            <span>It's perfectly clear right now.</span>
-          </div>
-        </div>
+    <div className="container max-w-screen-lg">
+      <div className="flex-1">
+        <CurrentWeather data={today} city={data.city} />
+        <Dashboard data={today} />
+        <WeeklyForecast data={data} />
       </div>
-    </main>
+    </div>
   );
 }
