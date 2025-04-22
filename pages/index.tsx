@@ -1,6 +1,8 @@
 import { useEffect, useState, FormEvent } from 'react';
 
-/* ---------- Types that match /api/weather response ---------- */
+/* ------------------------------------------------------------------ */
+/*  Types that match the JSON we return from /api/weather             */
+/* ------------------------------------------------------------------ */
 interface Hour {
   startTime: string;
   values: {
@@ -12,31 +14,34 @@ interface Hour {
     windSpeed: number;
   };
 }
+
 interface WeatherResponse {
   hourly: Hour[];
 }
 
-/* ---------- Component ---------- */
+/* ------------------------------------------------------------------ */
+/*  Main component                                                    */
+/* ------------------------------------------------------------------ */
 export default function Home() {
-  /* coords & weather state */
+  /* Coordinates and weather data */
   const [lat, setLat] = useState<number | null>(null);
   const [lon, setLon] = useState<number | null>(null);
   const [data, setData] = useState<WeatherResponse | null>(null);
 
-  /* UI helpers */
+  /* UI state */
   const [query, setQuery] = useState('');
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
-  /* ───── 1. Get location (10 s timeout, fallback to Delhi) ───── */
-  const FALLBACK = { lat: 28.6139, lon: 77.2090 }; // change if you like
+  /* 1 — Try geolocation, then fall back after 10 s */
+  const FALLBACK = { lat: 28.6139, lon: 77.2090 }; // Delhi
 
   useEffect(() => {
     let settled = false;
 
-    const ok = (p: GeolocationPosition) => {
+    const ok = (pos: GeolocationPosition) => {
       settled = true;
-      setLat(p.coords.latitude);
-      setLon(p.coords.longitude);
+      setLat(pos.coords.latitude);
+      setLon(pos.coords.longitude);
     };
     const fail = () => {
       settled = true;
@@ -46,46 +51,70 @@ export default function Home() {
 
     navigator.geolocation?.getCurrentPosition(ok, fail, {
       enableHighAccuracy: true,
-      timeout: 10_000
+      timeout: 10_000,
     });
 
-    /* Safari private‑mode may ignore the call entirely */
+    /* Safari private‑mode may ignore the API call entirely */
     setTimeout(() => !settled && fail(), 10_000);
   }, []);
 
-  /* ───── 2. Fetch weather whenever coords change ───── */
+  /* 2 — Fetch weather whenever coords change */
   useEffect(() => {
     if (lat == null || lon == null) return;
+
     fetch(`/api/weather?lat=${lat}&lon=${lon}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(console.error);
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.error || !json.hourly) {
+          console.error('[weather api]', json.error ?? 'invalid payload');
+          setData(null);
+          return;
+        }
+        setData(json as WeatherResponse);
+      })
+      .catch((err) => {
+        console.error(err);
+        setData(null);
+      });
   }, [lat, lon]);
 
-  /* ───── 3. Helpers ───── */
+  /* 3 — Helper functions */
   const convert = (c: number) => (unit === 'C' ? c : c * 9 / 5 + 32);
 
   async function handleSearch(e: FormEvent) {
     e.preventDefault();
     if (!query) return;
-    const g = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`).then(r => r.json());
+
+    const g = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`).then((r) =>
+      r.json(),
+    );
+
     if (g.lat) {
       setLat(parseFloat(g.lat));
       setLon(parseFloat(g.lon));
     }
   }
 
-  /* ───── 4. Render ───── */
-  if (!data || data.hourly.length === 0) {
+  /* 4 — Render states */
+  if (!data) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        Loading weather…
+        Loading weather or awaiting permission…
+      </main>
+    );
+  }
+
+  if (data.hourly.length === 0) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        Weather data unavailable right now.
       </main>
     );
   }
 
   const current = data.hourly[0].values;
 
+  /* 5 — UI */
   return (
     <main className="min-h-screen flex flex-col items-center p-4">
       {/* Header */}
@@ -96,14 +125,14 @@ export default function Home() {
         <form onSubmit={handleSearch} className="w-full flex mb-4">
           <input
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             className="flex-grow p-2 rounded-l-md border bg-transparent"
             placeholder="Search location…"
           />
           <button className="px-4 rounded-r-md border border-l-0">Search</button>
         </form>
 
-        {/* °C / °F toggle */}
+        {/* °C / °F toggle */}
         <button
           className="mb-4 px-4 py-2 border rounded-md"
           onClick={() => setUnit(unit === 'C' ? 'F' : 'C')}
@@ -129,12 +158,15 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Next 24 h */}
+        {/* Next 24 h */}
         <div className="p-4 rounded-lg shadow bg-white dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2">Next 24 h</h2>
           <ul className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {data.hourly.slice(0, 24).map((h, i) => (
-              <li key={i} className="p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-center">
+              <li
+                key={i}
+                className="p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-center"
+              >
                 <p className="text-sm">{new Date(h.startTime).getHours()}:00</p>
                 <p className="font-medium">
                   {convert(h.values.temperature).toFixed(0)}°{unit}
