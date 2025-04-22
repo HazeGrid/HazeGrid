@@ -1,10 +1,13 @@
-import { displayCurrent } from './modules/current.js';
-
-window.addEventListener('DOMContentLoaded', () => {
-  displayCurrent(); // Default to Jaipur
-
-  window.searchWeather = () => {
-    const location = document.getElementById('locationInput').value;
-    if (location) displayCurrent(location);
-  };
-});
+navigator.geolocation.getCurrentPosition(
+  async (position) => {
+    const { latitude, longitude } = position.coords;
+    const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
+    const data = await response.json();
+    displayCurrent(data);
+  },
+  (error) => {
+    console.error("Geolocation error:", error);
+    // fallback if permission denied
+    displayCurrent({ error: "Location access denied" });
+  }
+);
