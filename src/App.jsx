@@ -23,16 +23,28 @@ function App() {
   if (!weather) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="app">
-      <h1>HazeGrid's Weather</h1>
-      <div className="card">
-        <p>Temp: {Math.round(weather.temperature)}°C</p>
-        <p>Feels Like: {Math.round(weather.feels_like)}°C</p>
-        <p>Humidity: {weather.humidity}%</p>
-        <p>Wind: {Math.round(weather.wind_speed * 3.6)} km/h</p>
-      </div>
-    </div>
-  );
-}
+   return (
+  <div className="container">
+    <header>
+      <img src="/logo.png" alt="HazeGrid Logo" className="logo" />
+      <h1>HazeGrid</h1>
+    </header>
 
-export default App;
+    {error && <div className="error">{error}</div>}
+    {!error && !weather && <div className="loading">Loading...</div>}
+
+    {weather && (
+      <div className="card">
+        <div className="big-temp">
+          {Math.round(weather.temperature)}°
+          <div className="desc">Clear</div>
+        </div>
+        <div className="grid">
+          <div className="tile"><strong>Feels Like:</strong> {Math.round(weather.feels_like)}°</div>
+          <div className="tile"><strong>Humidity:</strong> {weather.humidity}%</div>
+          <div className="tile"><strong>Wind:</strong> {Math.round(weather.wind_speed * 3.6)} km/h</div>
+        </div>
+      </div>
+    )}
+  </div>
+);
