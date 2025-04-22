@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 function App() {
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState('');
+  const [unit, setUnit] = useState('C');
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -19,32 +20,34 @@ function App() {
     });
   }, []);
 
-  if (error) return <div className="error">{error}</div>;
-  if (!weather) return <div className="loading">Loading...</div>;
+  const toggleUnit = () => {
+    setUnit(unit === 'C' ? 'F' : 'C');
+  };
+
+  const convertTemp = (temp) => {
+    return unit === 'C' ? `${Math.round(temp)}°C` : `${Math.round((temp * 9/5) + 32)}°F`;
+  };
 
   return (
-   return (
-  <div className="container">
-    <header>
-      <img src="/logo.png" alt="HazeGrid Logo" className="logo" />
-      <h1>HazeGrid</h1>
-    </header>
-
-    {error && <div className="error">{error}</div>}
-    {!error && !weather && <div className="loading">Loading...</div>}
-
-    {weather && (
-      <div className="card">
-        <div className="big-temp">
-          {Math.round(weather.temperature)}°
-          <div className="desc">Clear</div>
-        </div>
-        <div className="grid">
-          <div className="tile"><strong>Feels Like:</strong> {Math.round(weather.feels_like)}°</div>
-          <div className="tile"><strong>Humidity:</strong> {weather.humidity}%</div>
-          <div className="tile"><strong>Wind:</strong> {Math.round(weather.wind_speed * 3.6)} km/h</div>
-        </div>
+    <div className="app">
+      <h1>HazeGrid's Weather</h1>
+      <div className="unit-toggle">
+        <button onClick={toggleUnit}>
+          {unit === 'C' ? 'Show °F' : 'Show °C'}
+        </button>
       </div>
-    )}
-  </div>
-);
+      {error && <div className="error">{error}</div>}
+      {!error && !weather && <div className="loading">Loading...</div>}
+      {weather && (
+        <div className="card">
+          <p>Temp: {convertTemp(weather.temperature)}</p>
+          <p>Feels Like: {convertTemp(weather.feels_like)}</p>
+          <p>Humidity: {weather.humidity}%</p>
+          <p>Wind: {Math.round(weather.wind_speed * 3.6)} km/h</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
