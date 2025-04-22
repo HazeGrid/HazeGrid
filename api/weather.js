@@ -8,20 +8,23 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(
-      `https://api.tomorrow.io/v4/weather/forecast?location=${lat},${lon}&timesteps=1h&units=metric&apikey=${apiKey}`
+      `https://api.tomorrow.io/v4/weather/realtime?location=${lat},${lon}&units=metric&apikey=${apiKey}`
     );
 
     if (!response.ok) throw new Error('API request failed');
 
     const data = await response.json();
-    const current = data.timelines.hourly[0].values;
+    const values = data.data.values;
 
     res.status(200).json({
-      temperature: current.temperature,
-      wind_speed: current.windSpeed,
-      humidity: current.humidity,
-      weather_code: current.weatherCode,
-      feels_like: current.temperatureApparent
+      name: data.location.name || "Your Location",
+      temperature: values.temperature,
+      feels_like: values.temperatureApparent,
+      temp_max: values.temperature + 2,
+      temp_min: values.temperature - 2,
+      humidity: values.humidity,
+      visibility: values.visibility,
+      description: "Clear sky"  // replace with real mapping if needed
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
