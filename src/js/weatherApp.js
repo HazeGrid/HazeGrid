@@ -72,14 +72,5 @@ ctaButton.addEventListener("click", () => {
 topButton.addEventListener("click", scrollToTop);
 
 getUserLocation();
-const unitToggle = document.getElementById("unitToggle");
-unitToggle.addEventListener("change", async () => {
-  useFahrenheit = unitToggle.checked;
-  const currentLocation = document.querySelector(".current-location").innerText;
-  if (currentLocation && currentLocation.trim() !== "") {
-    await fetchWeatherData(currentLocation);
-  } else {
-    getUserLocation();
-  }
-});
+
 
