@@ -1,40 +1,83 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #3a86ff, #8338ec);
-  height: 100vh;
-  color: white;
-  text-align: center;
-}
-
-.loading, .error {
-  font-size: 1.5rem;
+  transition: background 0.3s, color 0.3s;
 }
 
 .app {
-  text-align: center;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.1);
   padding: 2rem;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  margin-top: 1rem;
+  max-width: 720px;
+  margin: auto;
 }
 
-.unit-toggle {
-  margin-top: 1rem;
+.app.dark {
+  background-color: #0f0f0f;
+  color: white;
 }
 
-.unit-toggle button {
-  background-color: white;
+.app.light {
+  background-color: #f3f3f3;
+  color: black;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search input {
+  padding: 0.5rem;
+  border-radius: 8px;
   border: none;
+  margin-right: 0.5rem;
+}
+
+.search button,
+.actions button {
   padding: 0.5rem 1rem;
-  border-radius: 999px;
+  border-radius: 8px;
+  border: none;
   font-weight: bold;
   cursor: pointer;
+}
+
+.info-header {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.main-temp {
+  text-align: center;
+  font-size: 5rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.description {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.range {
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tile {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
 }
