@@ -1,8 +1,6 @@
 import { useEffect, useState, FormEvent } from 'react';
 
-/* ------------------------------------------------------------------ */
-/*  Types that match the JSON we return from /api/weather             */
-/* ------------------------------------------------------------------ */
+/* ---------- Types ---------- */
 interface Hour {
   startTime: string;
   values: {
@@ -14,26 +12,21 @@ interface Hour {
     windSpeed: number;
   };
 }
-
 interface WeatherResponse {
-  hourly: Hour[];
+  hourly?: Hour[];          // optional so TS allows undefined
 }
 
-/* ------------------------------------------------------------------ */
-/*  Main component                                                    */
-/* ------------------------------------------------------------------ */
+/* ---------- Component ---------- */
 export default function Home() {
-  /* Coordinates and weather data */
   const [lat, setLat] = useState<number | null>(null);
   const [lon, setLon] = useState<number | null>(null);
   const [data, setData] = useState<WeatherResponse | null>(null);
 
-  /* UI state */
   const [query, setQuery] = useState('');
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
-  /* 1 — Try geolocation, then fall back after 10 s */
-  const FALLBACK = { lat: 28.6139, lon: 77.2090 }; // Delhi
+  /* 1  Geolocation with 10 s fallback to Delhi */
+  const FALLBACK = { lat: 28.6139, lon: 77.2090 };
 
   useEffect(() => {
     let settled = false;
@@ -53,20 +46,18 @@ export default function Home() {
       enableHighAccuracy: true,
       timeout: 10_000,
     });
-
-    /* Safari private‑mode may ignore the API call entirely */
     setTimeout(() => !settled && fail(), 10_000);
   }, []);
 
-  /* 2 — Fetch weather whenever coords change */
+  /* 2  Fetch weather → guard against error payloads */
   useEffect(() => {
     if (lat == null || lon == null) return;
 
     fetch(`/api/weather?lat=${lat}&lon=${lon}`)
       .then((r) => r.json())
       .then((json) => {
-        if (json.error || !json.hourly) {
-          console.error('[weather api]', json.error ?? 'invalid payload');
+        if (json.error || !Array.isArray(json.hourly)) {
+          console.error('[weather api]', json.error ?? 'missing hourly');
           setData(null);
           return;
         }
@@ -78,24 +69,20 @@ export default function Home() {
       });
   }, [lat, lon]);
 
-  /* 3 — Helper functions */
+  /* 3  Helpers */
   const convert = (c: number) => (unit === 'C' ? c : c * 9 / 5 + 32);
 
   async function handleSearch(e: FormEvent) {
     e.preventDefault();
     if (!query) return;
-
-    const g = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`).then((r) =>
-      r.json(),
-    );
-
+    const g = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`).then((r) => r.json());
     if (g.lat) {
       setLat(parseFloat(g.lat));
       setLon(parseFloat(g.lon));
     }
   }
 
-  /* 4 — Render states */
+  /* 4  Render guards */
   if (!data) {
     return (
       <main className="min-h-screen flex items-center justify-center">
@@ -103,8 +90,7 @@ export default function Home() {
       </main>
     );
   }
-
-  if (data.hourly.length === 0) {
+  if (!Array.isArray(data.hourly) || data.hourly.length === 0) {
     return (
       <main className="min-h-screen flex items-center justify-center">
         Weather data unavailable right now.
@@ -114,14 +100,14 @@ export default function Home() {
 
   const current = data.hourly[0].values;
 
-  /* 5 — UI */
+  /* 5  UI */
   return (
     <main className="min-h-screen flex flex-col items-center p-4">
       {/* Header */}
       <header className="w-full max-w-3xl flex flex-col items-center mb-8">
         <h1 className="text-4xl font-bold mb-4">HazeGrid Weather</h1>
 
-        {/* Search bar */}
+        {/* Search */}
         <form onSubmit={handleSearch} className="w-full flex mb-4">
           <input
             value={query}
@@ -132,7 +118,7 @@ export default function Home() {
           <button className="px-4 rounded-r-md border border-l-0">Search</button>
         </form>
 
-        {/* °C / °F toggle */}
+        {/* °C / °F */}
         <button
           className="mb-4 px-4 py-2 border rounded-md"
           onClick={() => setUnit(unit === 'C' ? 'F' : 'C')}
@@ -141,7 +127,7 @@ export default function Home() {
         </button>
       </header>
 
-      {/* Weather cards */}
+      {/* Cards */}
       <section className="w-full max-w-3xl grid gap-4">
         {/* Current */}
         <div className="p-4 rounded-lg shadow bg-white dark:bg-gray-800">
@@ -158,7 +144,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Next 24 h */}
+        {/* Next 24 h */}
         <div className="p-4 rounded-lg shadow bg-white dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2">Next 24 h</h2>
           <ul className="grid grid-cols-2 md:grid-cols-4 gap-2">
