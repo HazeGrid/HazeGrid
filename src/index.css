@@ -1,25 +1,64 @@
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #3a86ff, #8338ec);
-  height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #0f0f0f;
   color: white;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+}
+
+.card {
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.big-temp {
+  font-size: 5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.desc {
+  font-size: 1rem;
+  color: #aaa;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tile {
+  background: #2a2a2a;
+  padding: 1rem;
+  border-radius: 10px;
 }
 
 .loading, .error {
   font-size: 1.5rem;
-}
-
-.app {
   text-align: center;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  margin-top: 3rem;
 }
