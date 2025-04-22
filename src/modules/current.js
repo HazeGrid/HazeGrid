@@ -1,13 +1,15 @@
-export async function displayCurrent() {
+export async function displayCurrent(location = "Jaipur") {
   try {
-    const res = await fetch('/api/weather?location=jaipur');
+    const res = await fetch(`/api/weather?location=${location}`);
     const data = await res.json();
-    console.log("Current weather data:", data);
 
-    const app = document.getElementById('app');
-    app.innerText = `🌡️ ${data.temp}°C | 💨 ${data.wind_speed} km/h | ☁️ ${data.description}`;
+    const weatherDisplay = `
+      🌡 ${data.temperature}°C | 💨 ${data.wind_speed} km/h | ☁️ ${data.humidity}
+    `;
+
+    document.getElementById("app").innerText = weatherDisplay;
   } catch (err) {
-    console.error("Failed to fetch weather:", err);
-    document.getElementById('app').innerText = "⚠️ Failed to load weather.";
+    document.getElementById("app").innerText = "⚠️ Unable to load weather";
+    console.error("Weather fetch error:", err);
   }
 }
