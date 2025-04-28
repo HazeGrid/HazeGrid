@@ -1,6 +1,6 @@
 # 🌫️ HazeGrid
 HazeGrid is a sleek, modern weather application delivering accurate real-time weather updates with a focus on simplicity, elegance, and responsiveness.
-It uses Next.js, TypeScript, and Tailwind CSS, and pulls weather data from Tomorrow.io API.
+It uses Next.js, TypeScript, and Tailwind CSS, and pulls weather data from Open Weather / Tomorrow.io API.
 
 🔗 Live Website: https://hazegrid.com
 
