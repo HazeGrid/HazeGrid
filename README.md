@@ -1,35 +1,96 @@
-# Weather
+# 🌫️ HazeGrid
+HazeGrid is a sleek, modern weather application delivering accurate real-time weather updates with a focus on simplicity, elegance, and responsiveness.
+It uses Next.js, TypeScript, and Tailwind CSS, and pulls weather data from Tomorrow.io API.
 
-Quickly access accurate weather information with a clean, modern and user-friendly design.
+🔗 Live Website: https://hazegrid.com
 
-<img src="thumbnail.png" alt="Weather" width="100%">
+✨ Features
+Real-time weather information (temperature, humidity, visibility, and more)
 
-## Installation
+Geolocation-based weather fetching
 
-Clone the repository and install dependencies using npm:
+Search bar to find weather for any city
 
-`npm install`
+Light and dark mode toggle
 
-## Usage
+Smart weather descriptions (e.g., "Feels warmer than actual")
 
-Start the development server:
+Responsive UI optimized for both desktop and mobile
 
-`npm run dev`
+Apple Weather-inspired design
 
-This will open the app in your default browser.
+°C / °F toggle switch
 
-Build the app for production:
+🛠️ Built With
+Next.js – React Framework
 
-`npm run build`
+TypeScript – Type Safety
 
-Preview the production build:
+Tailwind CSS – Styling
 
-`npm run preview`
+Tomorrow.io API / Open Weather API – Weather data provider
 
-## Contributing
+Vercel – Deployment Platform
 
-If you find any issues or have suggestions for improvement, please open an issue or submit a pull request on GitHub.
+📦 Installation
+To set up HazeGrid locally:
 
-## License
+Clone the repository:
 
+bash
+Copy
+Edit
+git clone https://github.com/HazeGrid/HazeGrid.git
+cd HazeGrid
+Install dependencies:
+
+bash
+Copy
+Edit
+npm install
+Set up environment variables:
+
+Create a .env.local file in the root directory and add your Tomorrow.io API key:
+
+env
+Copy
+Edit
+NEXT_PUBLIC_WEATHER_API_KEY=your_tomorrowio_api_key
+Run the development server:
+
+bash
+Copy
+Edit
+npm run dev
+Open http://localhost:3000 in your browser.
+
+🧠 Usage
+Visit hazegrid.com to experience the live app.
+
+Search for a city or allow location access to fetch your local weather.
+
+Toggle between °C and °F.
+
+Switch between dark mode and light mode.
+
+📄 License
 This project is licensed under the MIT License.
+
+Feel free to use, modify, and distribute under the terms of the MIT license.
+
+🤝 Contributing
+Contributions, issues, and feature requests are welcome!
+
+Fork the repository
+
+Create your feature branch: git checkout -b feature/YourFeature
+
+Commit your changes: git commit -m 'Add some feature'
+
+Push to the branch: git push origin feature/YourFeature
+
+Open a pull request
+
+Home	Search	Dark Mode
+🌟 Give it a Star!
+If you like the project, consider giving it a ⭐️ on GitHub — it helps grow the project and reach more people!
